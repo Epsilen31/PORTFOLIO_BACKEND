@@ -3,7 +3,7 @@ import ErrorHandler from "../middlewares/error.js";
 import SoftwareApplication from "../models/softwareApplicationSchema.js";
 import { v2 as cloudinary } from "cloudinary";
 
-// Implement post timeline logic here
+// Implement add application logic here
 export const addNewApplication = catchAsynError(async (req, res, next) => {
   if (!req.files || Object.keys(req.files).length === 0) {
     return next(
@@ -18,10 +18,11 @@ export const addNewApplication = catchAsynError(async (req, res, next) => {
 
   try {
     // Upload avatar to Cloudinary
-    const SvgResult = await cloudinary.uploader.upload(svg.tempFilePath, {
+    const svgResult = await cloudinary.uploader.upload(svg.tempFilePath, {
       folder: "APPLICATION SOFTWARE",
     });
-    if (!SvgResult || SvgResult.error) {
+    console.log(svgResult);
+    if (!svgResult || svgResult.error) {
       return next(
         new ErrorHandler(500, "Failed to upload Software Application Svg")
       );
@@ -30,8 +31,8 @@ export const addNewApplication = catchAsynError(async (req, res, next) => {
     // Create a new timeline with the uploaded avatar
     const newApplication = new SoftwareApplication({
       svg: {
-        public_id: SvgResult.public_id,
-        url: SvgResult.secure_url,
+        public_id: svgResult.public_id,
+        url: svgResult.secure_url,
       },
       name,
     });
@@ -41,7 +42,12 @@ export const addNewApplication = catchAsynError(async (req, res, next) => {
       message: "Software Application Created Successfully",
       data: newApplication,
     });
-  } catch (error) {}
+  } catch (error) {
+    console.error("Error generating application software:", error.message);
+    return next(
+      new ErrorHandler(500, "Failed to upload Software Application Svg")
+    );
+  }
 });
 
 // Implement get timeline logic here
@@ -64,7 +70,7 @@ export const deleteApplication = catchAsynError(async (req, res, next) => {
   // Delete the Software Application from Cloudinary
   await cloudinary.uploader.destroy(application.svg.public_id);
   // Delete the Software Application from the database
-  await application.remove();
+  await application.deleteOne();
   res.status(200).json({
     success: true,
     message: "Software Application deleted successfully",
