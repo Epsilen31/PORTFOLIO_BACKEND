@@ -10,6 +10,7 @@ import userRouter from "./Routes/userRoute.js";
 import timelineRoute from "./Routes/timelineRoute.js";
 import softwareApplicationRoute from "./Routes/softwareApplicationRoute.js";
 import skillRoute from "./Routes/skillRoute.js";
+import projectRoute from "./Routes/projectRoute.js";
 
 const app = express();
 
@@ -55,6 +56,7 @@ app.use("/api/v1/user", userRouter);
 app.use("/api/v1/timeline", timelineRoute);
 app.use("/api/v1/softwareApplication", softwareApplicationRoute);
 app.use("/api/v1/skills", skillRoute);
+app.use("/api/v1/project", projectRoute);
 
 // set cloudinary
 
