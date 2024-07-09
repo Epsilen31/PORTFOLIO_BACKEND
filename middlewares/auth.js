@@ -9,7 +9,7 @@ export const authenticateUser = catchAsynError(async (req, res, next) => {
     req.cookies.token || req.header("Authorization")?.replace("Bearer ", "");
 
   if (!token) {
-    return next(new ErrorHandler("User not authenticated", 401));
+    return next(new ErrorHandler(401, "User not authenticated"));
   }
 
   try {
@@ -18,7 +18,7 @@ export const authenticateUser = catchAsynError(async (req, res, next) => {
 
     // Ensure the decoded token has an ID
     if (!decoded.id) {
-      return next(new ErrorHandler("Invalid token", 403));
+      return next(new ErrorHandler(403, "Invalid token"));
     }
 
     // Fetch the user from the database
@@ -26,7 +26,7 @@ export const authenticateUser = catchAsynError(async (req, res, next) => {
 
     // Check if the user still exists
     if (!user) {
-      return next(new ErrorHandler("User no longer exists", 404));
+      return next(new ErrorHandler(404, "User no longer exists"));
     }
 
     // Attach the user to the request
@@ -35,11 +35,11 @@ export const authenticateUser = catchAsynError(async (req, res, next) => {
   } catch (error) {
     // Handle token verification errors
     if (error.name === "TokenExpiredError") {
-      return next(new ErrorHandler("Token expired", 403));
+      return next(new ErrorHandler(403, "Token expired"));
     } else if (error.name === "JsonWebTokenError") {
-      return next(new ErrorHandler("Invalid token", 403));
+      return next(new ErrorHandler(403, "Invalid token"));
     } else {
-      return next(new ErrorHandler("Internal Server Error", 500));
+      return next(new ErrorHandler(500, "Internal Server Error"));
     }
   }
 });

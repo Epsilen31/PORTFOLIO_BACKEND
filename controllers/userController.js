@@ -339,7 +339,7 @@ export const forgotPassword = catchAsynError(async (req, res, next) => {
 
     res.status(200).json({
       success: true,
-      message: "Reset token sent to the registered email",
+      message: "Reset link sent to the registered email",
     });
   } catch (error) {
     console.error("An error occurred:", error.message);
@@ -373,8 +373,13 @@ export const resetPassword = catchAsynError(async (req, res, next) => {
     );
   }
 
+  if (!req.body.password || !req.body.confirmPassword) {
+    return next(new ErrorHandler(400, "All fields are required"));
+  }
   if (req.body.password !== req.body.confirmPassword) {
-    return next(new ErrorHandler("Password & Confirm Password do not match"));
+    return next(
+      new ErrorHandler(410, "Password & Confirm Password do not match")
+    );
   }
   const hashedPassword = await bcrypt.hash(req.body.password, 10);
   user.password = hashedPassword;
@@ -382,6 +387,5 @@ export const resetPassword = catchAsynError(async (req, res, next) => {
   user.resetTokenExpiration = undefined;
 
   await user.save();
-
   generateToken(user, "Reset Password Successfully!", 200, res);
 });
