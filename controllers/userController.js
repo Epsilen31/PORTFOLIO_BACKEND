@@ -232,7 +232,7 @@ export const updateUser = catchAsynError(async (req, res, next) => {
     await user.save();
 
     // Respond with success message or token
-    generateToken(user, "User updated Successfully", 200, res);
+    generateToken(user, "User Profile updated Successfully", 200, res);
   } catch (error) {
     console.error("An error occurred:", error.message);
     return next(new ErrorHandler(500, "Internal Server Error"));
