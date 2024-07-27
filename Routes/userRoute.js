@@ -20,7 +20,7 @@ userRouter.get("/logout", authenticateUser, logout);
 userRouter.get("/getuser", authenticateUser, getUser);
 userRouter.put("/update/profile", authenticateUser, updateUser);
 userRouter.put("/update/password", authenticateUser, updatePassword);
-userRouter.get("/getPortfolioUser/:id", getPortfolioUser);
+userRouter.get("/getPortfolioUser/me", getPortfolioUser);
 userRouter.post("/password/forgot", forgotPassword);
 userRouter.put("/password/reset/:token", resetPassword);
 
