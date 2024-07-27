@@ -23,6 +23,7 @@ export const register = catchAsynError(async (req, res, next) => {
   } = req.body;
 
   // Check if user already exists
+
   const user = await User.findOne({ email });
   if (user) {
     return next(new ErrorHandler(400, "User already exists"));
@@ -155,10 +156,10 @@ export const updateUser = catchAsynError(async (req, res, next) => {
       aboutme,
       phone,
       portfolioURL,
-      gitHubURL,
       linkedInURL,
       instagramURL,
       twitterURL,
+      gitHubURL,
     } = req.body;
 
     // Fetch user by ID

@@ -5,14 +5,10 @@ const projectSchema = new mongoose.Schema({
     type: String,
     required: [true, "Name is required"],
   },
-  description: {
-    type: String,
-    required: [true, "Description is required"],
-  },
-  technologyStack: {
-    type: [String],
-    validate: [arrayLimit, "At least one technology is required"],
-  },
+  description: String,
+  technologyStack: [String], // Change this line to an array of strings
+  stack: String,
+  deployed: String,
   githublink: String,
   deployementlink: String,
   projectBanner: {
@@ -26,9 +22,5 @@ const projectSchema = new mongoose.Schema({
     },
   },
 });
-
-function arrayLimit(val) {
-  return val.length > 0;
-}
 
 export default mongoose.model("Project", projectSchema);

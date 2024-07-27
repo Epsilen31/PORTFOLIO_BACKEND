@@ -11,8 +11,7 @@ const timelineSchema = new mongoose.Schema({
   },
   timeline: {
     from: {
-      type: Date,
-      required: [true, "From date required"],
+      type: String,
     },
     to: String,
   },

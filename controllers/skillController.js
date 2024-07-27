@@ -4,37 +4,45 @@ import Skill from "../models/skillSchema.js";
 import { v2 as cloudinary } from "cloudinary";
 
 // addNewSkill
+const validLevels = ["Beginner", "Intermediate", "Advanced", "Expert"];
+
 export const addNewSkill = catchAsynError(async (req, res, next) => {
   if (!req.files || Object.keys(req.files).length === 0) {
-    return next(new ErrorHandler(400, "skill Svg are required"));
+    return next(new ErrorHandler(400, "Skill SVG is required"));
   }
   const { svg } = req.files;
-  const { name, level } = req.body;
-  console.log(name, level);
-  if (!name || !level) {
-    return next(new ErrorHandler(400, "Skill Name or level is required"));
+  const { title, proficiency } = req.body;
+
+  if (!title || !proficiency) {
+    return next(
+      new ErrorHandler(400, "Skill title and proficiency are required")
+    );
+  }
+
+  if (!validLevels.includes(proficiency)) {
+    return next(new ErrorHandler(400, "Invalid proficiency level"));
   }
 
   try {
-    // Upload avatar to Cloudinary
+    // Upload SVG to Cloudinary
     const svgResult = await cloudinary.uploader.upload(svg.tempFilePath, {
       folder: "SKILL",
     });
-    console.log(svgResult);
+
     if (!svgResult || svgResult.error) {
-      return next(new ErrorHandler(500, "Failed to upload skill Svg"));
+      return next(new ErrorHandler(500, "Failed to upload skill SVG"));
     }
 
-    // Create a new timeline with the uploaded avatar
+    // Create a new skill with the uploaded SVG
     const newSkill = new Skill({
       svg: {
         public_id: svgResult.public_id,
         url: svgResult.secure_url,
       },
-      name,
-      level,
+      title,
+      proficiency,
     });
-    console.log(newSkill);
+
     await newSkill.save();
     res.status(201).json({
       success: true,
@@ -42,8 +50,8 @@ export const addNewSkill = catchAsynError(async (req, res, next) => {
       data: newSkill,
     });
   } catch (error) {
-    console.error("Error generating skill:", error.message);
-    return next(new ErrorHandler(500, "Failed to upload skill Svg"));
+    console.error("Error creating skill:", error.message);
+    return next(new ErrorHandler(500, "Failed to create skill"));
   }
 });
 
@@ -66,54 +74,26 @@ export const deleteSkill = catchAsynError(async (req, res, next) => {
 
 // updateSkill
 export const updateSkill = catchAsynError(async (req, res, next) => {
-  const { id } = req.params; // Extract the skill ID from the request parameters
-  const { svg } = req.files; // Extract the SVG file from the request files
-  const { name, level } = req.body; // Extract the name and level from the request body
-
-  // Find the skill in the database by ID
-  const skill = await Skill.findById(id);
+  const { id } = req.params;
+  let skill = await Skill.findById(id);
   if (!skill) {
-    // If the skill is not found, return a 404 error
-    return next(new ErrorHandler(404, "Skill not found"));
+    return next(new ErrorHandler("Skill not found!", 404));
   }
-
-  // Store the public ID of the current SVG to delete it later if needed
-  let oldSvgPublicId = skill.svg.public_id;
-
-  // If a new SVG file is provided, upload it to Cloudinary
-  if (svg) {
-    const svgResult = await cloudinary.uploader.upload(svg.tempFilePath, {
-      folder: "SKILL", // Specify the folder in Cloudinary to upload the file
-    });
-    if (!svgResult || svgResult.error) {
-      // If the upload fails, return a 500 error
-      return next(new ErrorHandler(500, "Failed to upload skill Svg"));
+  const { proficiency } = req.body;
+  skill = await Skill.findByIdAndUpdate(
+    id,
+    { proficiency },
+    {
+      new: true,
+      runValidators: true,
+      useFindAndModify: false,
     }
-    // Update the skill's SVG with the new public ID and URL from Cloudinary
-    skill.svg = {
-      public_id: svgResult.public_id,
-      url: svgResult.secure_url,
-    };
-  }
-
-  // Update the skill properties if new values are provided
-  if (name) skill.name = name;
-  if (level) skill.level = level;
-
-  // Save the updated skill to the database
-  await skill.save();
-
-  // Delete the old SVG from Cloudinary if a new one was uploaded and it's different from the old one
-  if (svg && oldSvgPublicId && oldSvgPublicId !== skill.svg.public_id) {
-    await cloudinary.uploader.destroy(oldSvgPublicId);
-
-    // Send a success response with the updated skill data
-    res.status(200).json({
-      success: true,
-      message: "Skill updated successfully",
-      data: skill,
-    });
-  }
+  );
+  res.status(200).json({
+    success: true,
+    message: "Skill Updated!",
+    skill,
+  });
 });
 
 // getAllSkills
