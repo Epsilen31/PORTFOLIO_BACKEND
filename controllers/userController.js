@@ -279,7 +279,7 @@ export const updatePassword = catchAsynError(async (req, res, next) => {
 // get user for portfolio -> authentication not required
 export const getPortfolioUser = catchAsynError(async (req, res, next) => {
   try {
-    const id = "66a4d6690c5c690b097709e9";
+    const id = "66a66dcfffbb8c01c4be1725";
     const user = await User.findById(id);
     if (!user) {
       return next(new ErrorHandler(404, "User not found"));
