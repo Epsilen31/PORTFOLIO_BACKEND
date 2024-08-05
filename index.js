@@ -40,7 +40,7 @@ app.use(
       process.env.DASHBOARD_URL,
       process.env.PORTFOLIO_URL,
     ],
-    credentials: "include",
+    credentials: true,
     allowedHeaders: [
       "Origin",
       "X-Requested-With",
