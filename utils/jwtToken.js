@@ -8,8 +8,9 @@ export const generateToken = async (user, message, statuscode, res) => {
     res
       .status(statuscode)
       .cookie("token", token, {
-        expiresIn: 10 * 24 * 60 * 60 * 1000,
-        httpOnly: true,
+        expires: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000), // Set expiration time for the cookie
+        httpOnly: true, // Cookie is not accessible via JavaScript (prevents XSS attacks)
+        sameSite: "strict", // Cookie is sent only for same-site requests
       })
       .json({ success: true, message, user, token });
   } catch (error) {
