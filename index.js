@@ -34,6 +34,7 @@ app.use(
 
 // Enable CORS for both frontend and backend
 app.use(
+  "*",
   cors({
     origin: [
       process.env.MONGO_URL,
