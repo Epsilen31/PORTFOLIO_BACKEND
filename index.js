@@ -32,15 +32,23 @@ app.use(
   })
 );
 
-// Enable CORS for both frontend and backend
+// CORS configuration
+const allowedOrigins = [
+  "http://localhost:5173", // Local development
+  "http://localhost:5174", // Local development (if applicable)
+  "https://epsilon-dashboard.netlify.app", // Production
+  "https://epsilen-portfolio.netlify.app", // Add any other production URLs here
+];
+
 app.use(
-  "*",
   cors({
-    origin: [
-      process.env.MONGO_URL,
-      process.env.DASHBOARD_URL,
-      process.env.PORTFOLIO_URL,
-    ],
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true,
     allowedHeaders: [
       "Origin",
@@ -48,38 +56,14 @@ app.use(
       "Content-Type",
       "Authorization",
     ],
-    methods: ["GET", "POST", "PUT", "DELETE"],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   })
 );
-
-const allowedOrigins = ["http://localhost:5173", "http://localhost:5174"];
-
-app.use((req, res, next) => {
-  const origin = req.headers.origin;
-
-  if (allowedOrigins.includes(origin)) {
-    res.header("Access-Control-Allow-Origin", origin);
-  }
-
-  res.header("Access-Control-Allow-Credentials", "true");
-  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-  res.header(
-    "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-Type, Authorization"
-  );
-
-  // Handle preflight requests
-  if (req.method === "OPTIONS") {
-    return res.sendStatus(200);
-  }
-
-  next();
-});
 
 // Connect to the database
 connectDB();
 
-// Define routes here (example route)
+// Define routes
 app.use("/api/v1/message", messageRouter);
 app.use("/api/v1/user", userRouter);
 app.use("/api/v1/timeline", timelineRoute);
@@ -87,8 +71,7 @@ app.use("/api/v1/softwareApplication", softwareApplicationRoute);
 app.use("/api/v1/skills", skillRoute);
 app.use("/api/v1/project", projectRoute);
 
-// set cloudinary
-
+// Configure Cloudinary
 cloudinary.v2.config({
   cloud_name: process.env.CLOUDINARY_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
