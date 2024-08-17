@@ -136,6 +136,7 @@ export const logout = catchAsynError(async (req, res, next) => {
 // Get user for admin dashboard -> authentication required
 export const getUser = catchAsynError(async (req, res, next) => {
   try {
+    console.log(req.user._id);
     const user = await User.findById(req.user._id);
     if (!user) {
       return next(new ErrorHandler(404, "User not found"));
