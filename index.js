@@ -49,7 +49,7 @@ app.use(
         callback(new Error("Not allowed by CORS"));
       }
     },
-    credentials: "include",
+    credentials: true,
     allowedHeaders: [
       "Origin",
       "X-Requested-With",
