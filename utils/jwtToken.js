@@ -13,7 +13,7 @@ export const generateToken = async (user, message, statusCode, res) => {
         expires: new Date(Date.now() + 10 * 60 * 60 * 1000), // 10 hours expiration
         httpOnly: true, // Prevents JavaScript from accessing the cookie (for security)
         secure: process.env.NODE_ENV === "production", // Set to true in production (requires HTTPS)
-        sameSite: process.env.NODE_ENV === "production" ? "None" : "lax", // 'none' for cross-site requests in production
+        sameSite: "lax", // 'none' for cross-site requests in production
       })
       .json({ success: true, message, user, token });
   } catch (error) {
