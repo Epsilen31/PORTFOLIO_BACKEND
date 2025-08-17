@@ -10,9 +10,10 @@ export const authenticateUser = catchAsynError(async (req, res, next) => {
 
   if (!token && req.headers.authorization) {
     const authHeader = req.headers.authorization;
+    
     if (authHeader.startsWith("Bearer ")) {
       token = authHeader.split(" ")[1];
-    }
+
   }
 
   if (!token) {

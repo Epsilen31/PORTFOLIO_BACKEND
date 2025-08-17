@@ -133,7 +133,7 @@ export const logout = catchAsynError(async (req, res, next) => {
         expires: new Date(0),
         httpOnly: true,
         secure: isProduction,
-        sameSite: isProduction ? "none" : "lax",
+        sameSite: isProduction ? "none" : "lax"
       })
       .json({ success: true, message: "User logged out" });
   } catch (error) {
@@ -145,7 +145,6 @@ export const logout = catchAsynError(async (req, res, next) => {
 // Get user for admin dashboard -> authentication required
 export const getUser = catchAsynError(async (req, res, next) => {
   try {
-    console.log(req.user._id);
     const user = await User.findById(req.user._id);
     if (!user) {
       return next(new ErrorHandler(404, "User not found"));

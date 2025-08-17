@@ -16,6 +16,7 @@ export const generateToken = async (user, message, statusCode, res) => {
         httpOnly: true, // Prevents JavaScript from accessing the cookie (for security)
         secure: isProduction, // Send cookie only over HTTPS in production
         sameSite: isProduction ? "none" : "lax", // Allow cross-site cookie in production
+
       })
       .json({ success: true, message, user, token });
   } catch (error) {
