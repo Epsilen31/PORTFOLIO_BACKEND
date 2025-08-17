@@ -124,9 +124,18 @@ export const login = catchAsynError(async (req, res, next) => {
 // Logout controller
 export const logout = catchAsynError(async (req, res, next) => {
   try {
-    // Remove the token from the response header
-    res.clearCookie("token");
-    res.status(200).json({ success: true, message: "User logged out" });
+    const isProduction = process.env.NODE_ENV === "production";
+
+    // Clear the authentication cookie
+    res
+      .status(200)
+      .cookie("token", "", {
+        expires: new Date(0),
+        httpOnly: true,
+        secure: isProduction,
+        sameSite: isProduction ? "none" : "lax",
+      })
+      .json({ success: true, message: "User logged out" });
   } catch (error) {
     console.error("An error occurred:", error.message);
     return next(new ErrorHandler(500, "Internal Server Error"));
