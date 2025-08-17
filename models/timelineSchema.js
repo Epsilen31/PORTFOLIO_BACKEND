@@ -12,9 +12,27 @@ const timelineSchema = new mongoose.Schema({
   timeline: {
     from: {
       type: String,
+      required: [true, "From date required"],
     },
-    to: String,
+    to: String, // Can be null for "Present"
   },
+  location: {
+    type: String,
+    default: "",
+  },
+  type: {
+    type: String,
+    enum: ["education", "internship", "fulltime", "freelance"],
+    default: "fulltime",
+  },
+  achievements: [{
+    type: String,
+  }],
+  skills: [{
+    type: String,
+  }],
+}, {
+  timestamps: true
 });
 
 export default mongoose.model("Timeline", timelineSchema);
