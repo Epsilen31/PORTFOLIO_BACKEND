@@ -6,14 +6,16 @@ export const generateToken = async (user, message, statusCode, res) => {
       expiresIn: "10h", // Token expires in 10 hours
     });
 
+    const isProduction = process.env.NODE_ENV === "production";
+
     // Configure the cookie with cross-origin support and secure settings
     res
       .status(statusCode)
       .cookie("token", token, {
         expires: new Date(Date.now() + 10 * 60 * 60 * 1000), // 10 hours expiration
         httpOnly: true, // Prevents JavaScript from accessing the cookie (for security)
-        secure: process.env.NODE_ENV === "production", // Set to true in production (requires HTTPS)
-        sameSite: "lax", // 'none' for cross-site requests in production
+        secure: isProduction, // Send cookie only over HTTPS in production
+        sameSite: "none", // Always allow cross-site cookies
       })
       .json({ success: true, message, user, token });
   } catch (error) {
