@@ -133,7 +133,7 @@ export const logout = catchAsynError(async (req, res, next) => {
         expires: new Date(0),
         httpOnly: true,
         secure: isProduction,
-        sameSite: "none",
+        sameSite: isProduction ? "none" : "lax"
       })
       .json({ success: true, message: "User logged out" });
   } catch (error) {
